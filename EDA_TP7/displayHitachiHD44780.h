@@ -1,5 +1,8 @@
 #pragma once
 #include "basicLCD.h"
+#include "LCDconnect.h"
+
+#define LCD_NUMBER 1
 class displayHitachiHD44780 :
 	public basicLCD
 {
