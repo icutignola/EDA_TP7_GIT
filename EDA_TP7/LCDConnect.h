@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <cstdio>
 #include <windows.h>
 #include <chrono>

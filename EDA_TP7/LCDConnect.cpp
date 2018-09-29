@@ -3,14 +3,15 @@ using namespace std;
 
 void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 {
-	unsigned char temp = nibble & 0xfe;
+	//nibble: XXXXYYYY
+	unsigned char temp = nibble & 0xfe;		//b: XXXXYYY0 (E = 0)
 	DWORD byteSent = 0;
 	FT_Write(ft, &temp, 1, &byteSent);
 	Sleep(1);
-	temp = nibble | 0x01;
+	temp = nibble | 0x01;					//b: XXXXYYY1 (E = 1)			
 	FT_Write(ft, &temp, 1, &byteSent);
 	Sleep(3);
-	temp = nibble & 0xfe;
+	temp = nibble & 0xfe;					//b: XXXXYYY0 (E = 0)
 	FT_Write(ft, &temp, 1, &byteSent);
 	Sleep(1);
 }
@@ -21,7 +22,7 @@ FT_HANDLE * init_ftdi_lcd(int iDevice)
 	FT_STATUS statusSet = !FT_OK;
 	FT_HANDLE lcdHandle = NULL;
 	DWORD sizeSent = 0;
-	string lcdDescriptionS = string(MY_LCD_DESCRIPTION + iDevice + string(PORT_B);
+	string lcdDescriptionS = MY_LCD_DESCRIPTION + to_string(iDevice) + PORT_B;
 	char *lcdDescriptionC;
 	strcpy(lcdDescriptionC, lcdDescriptionS.c_str());
 
@@ -63,21 +64,21 @@ FT_HANDLE * init_ftdi_lcd(int iDevice)
 
 void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
 {
-	unsigned char temp = valor & 0xF0;
-	temp = temp & 0xB0;
+	//valor: XXXXYYYY
+	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
-	temp = ((valor & 0x0F) << 4) & 0xF0;
-	temp = temp  0x02;
+	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
 void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
 {
-	unsigned char temp = valor & 0xF0;
-	temp = temp | 0x02;
+	//valor = XXXXYYYY
+	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
+	temp = temp | 0x02;						//b: XXXX0010 (RS = 1)	
 	lcdWriteNibble(deviceHandler, temp);
-	temp = ((valor & 0x0F) << 4) & 0xF0;
-	temp = temp | 0x02;
+	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)	
+	temp = temp | 0x02;						//b: YYYY0010 (RS = 1)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
