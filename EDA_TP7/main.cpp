@@ -62,7 +62,10 @@ FT_HANDLE * init_ftdi_lcd(int iDevice);					//Funcion que inicializa el FTDI y e
 void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor);	
 
 //Escribe un byte al DR 
-void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
+void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
+
+
+
 
 void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 {
