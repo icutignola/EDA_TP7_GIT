@@ -1,7 +1,7 @@
 #include "LCDConnect.h"
 using namespace std;
 
-void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
+void LCDConnect::lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 {
 	//nibble: XXXXYYYY
 	unsigned char temp = nibble & 0xfe;		//b: XXXXYYY0 (E = 0)
@@ -16,7 +16,7 @@ void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 	Sleep(1);
 }
 
-FT_HANDLE * init_ftdi_lcd(int iDevice)
+FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 {
 	FT_STATUS statusOpen = !FT_OK;
 	FT_STATUS statusSet = !FT_OK;
@@ -49,12 +49,12 @@ FT_HANDLE * init_ftdi_lcd(int iDevice)
 			}
 			else
 			{
-				cout << "Error al configurar el LCD" << endl;
+				lcdError.setError("Ocurrio un error a la hora de configurar el LCD");
 			}
 		}
 		else
 		{
-			cout << "Error al conectar con el LCD" << endl;
+			lcdError.setError("Ocurrio un error a la hora de contar el LCD");
 		}
 		current = std::chrono::system_clock::now();
 	}
@@ -62,7 +62,7 @@ FT_HANDLE * init_ftdi_lcd(int iDevice)
 	return &lcdHandle;
 }
 
-void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
+void LCDConnect::lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
 {
 	//valor: XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
@@ -71,7 +71,7 @@ void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
-void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
+void LCDConnect::lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
 {
 	//valor = XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
@@ -80,5 +80,10 @@ void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)	
 	temp = temp | 0x02;						//b: YYYY0010 (RS = 1)
 	lcdWriteNibble(deviceHandler, temp);
+}
+
+string LCDConnect::getErrorLcd(void)
+{
+	return lcdError;
 }
 

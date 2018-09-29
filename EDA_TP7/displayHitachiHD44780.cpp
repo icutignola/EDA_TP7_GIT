@@ -1,15 +1,13 @@
 #include "displayHitachiHD44780.h"
-
 #include <iostream>
 #include <cstdio>
 
 
 displayHitachiHD44780::displayHitachiHD44780()
 {
-	lcdPointer = init_ftdi_lcd(LCD_NUMBER);
-		
+	lcdPointer = lcd.init_ftdi_lcd(LCD_NUMBER);
+	cadd = 1;
 }
-
 
 displayHitachiHD44780::~displayHitachiHD44780()
 {
@@ -18,14 +16,16 @@ displayHitachiHD44780::~displayHitachiHD44780()
 bool 
 displayHitachiHD44780::lcdInitOk()
 {
+	bool answer;
 	if (lcdPointer == NULL)
 	{
-		return false;
+		answer = false;
 	}
 	else
 	{
-		return true;
+		answer = true;
 	}
+	return answer;
 }
 
 FT_STATUS 
@@ -37,11 +37,20 @@ displayHitachiHD44780::lcdGetError()
 bool
 displayHitachiHD44780::lcdClear()
 {
-	lcdWriteIR(lcdPointer,LCD_CLEAR);
+	lcd.lcdWriteIR(lcdPointer,LCD_CLEAR);
 }
 bool
 displayHitachiHD44780::lcdClearToEOL()
 {
+	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC) || (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC))
+	{
+
+	}
+	else
+	{
+		//error
+	}
+		
 	/*Esta funcion basicamente recorre desde donde esta el puntero(cadd-1) hasta el final del display
 	poniendo vacios en el data(lo ideal seria un clear de un solo bit, pero no encontre si existe).
 	Los limites de navegacion deberian ser defines de las posiciones del lcd.
@@ -54,38 +63,118 @@ displayHitachiHD44780::lcdClearToEOL()
 					
 }
 
+basicLCD & displayHitachiHD44780::operator<<(const unsigned char c)
+{
+	// TODO: insertar una instrucción return aquí
+}
+
+basicLCD & displayHitachiHD44780::operator<<(const unsigned char * c)
+{
+	// TODO: insertar una instrucción return aquí
+}
+
 bool
 displayHitachiHD44780::lcdMoveCursorUp()
 {
-	/*Se fija en que linea esta, si esta en la de arriba, devuelve false.
-	Si esta en la de abajo, se fija en que columna esta(distancia de cadd hasta el define del inicio de linea ) y pone cadd a esa misma distancia 
-	en la linea de arriba*/
+	bool answer = false;
+
+	if (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC)	//Segunda linea
+	{
+		cadd -= 16;
+		answer = true;
+	}
+	
+	return answer;
 }
+
 bool
 displayHitachiHD44780::lcdMoveCursorDown()
 {
-	//igual que moveup pero con false en la segunda linea
+	bool answer = false;
+
+	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC))	//Segunda linea
+	{
+		cadd += 16;
+		answer = true;
+	}
+
+	return answer;
 }
+
 bool
 displayHitachiHD44780::lcdMoveCursorRight()
 {
-	/*Si esta en la segunda linea en la ultima columna, devuelve false, caso contrario, hace ++cadd
-	Si esta en la primer linea en la ultima columna, apunta a la primera posicion de la segunda linea,
-	si no es la ultima posicion, hace ++cadd*/
-	
+	bool answer = false;
+
+	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC) || (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC))
+	{
+		if (cadd == SECONDL_LASTC)
+		{
+			cadd = FIRSTL_FIRSTC;
+			answer = true;
+		}
+		else
+		{
+			cadd++;
+			answer = true;
+		}
+	}
+
+	return answer;	
 }
+
 bool
 displayHitachiHD44780::lcdMoveCursorLeft()
 {
-	//igual que right pero con los errores en primera linea
+	bool answer = false;
+
+	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC) || (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC))
+	{
+		if (cadd == FIRSTL_FIRSTC)
+		{
+			cadd = SECONDL_LASTC;
+			answer = true;
+		}
+		else
+		{
+			cadd--;
+			answer = true;
+		}
+	}
+
+	return answer;
 }
+
 bool
 displayHitachiHD44780::lcdSetCursorPosition(const cursorPosition pos)
 {
-	// pone cadd-1 donde me pasaron
+	BYTE valor;
+	BYTE row = ((pos.row * 4) << 4) & 0xF0;
+	BYTE column = (pos.column - 1) & 0x0F;
+	valor = row | column | LCD_WRITE_AC;
+	lcd.lcdWriteIR(lcdPointer, valor);
 }
 cursorPosition
 displayHitachiHD44780::lcdGetCursorPosition()
 {
-	 // devuelve la posicion de cadd-1
+	cursorPosition posAnswer;
+	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC))	//Primera linea
+	{
+		posAnswer.row = 0;
+		posAnswer.column = cadd;
+	}
+
+	else if (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC)	//Segunda linea
+	{
+		posAnswer.row = 1;
+		posAnswer.column = (cadd - 16);
+	}
+
+	else //Error
+	{
+		posAnswer.row = (-1);
+		posAnswer.column = (-1);
+	}
+	
+	return posAnswer;
 }

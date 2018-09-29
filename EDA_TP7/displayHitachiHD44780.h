@@ -2,7 +2,11 @@
 #include "basicLCD.h"
 #include "LCDconnect.h"
 
-#define LCD_NUMBER 1
+#define LCD_NUMBER	1
+#define FIRSTL_FIRSTC	1
+#define FIRSTL_LASTC	16
+#define SECONDL_FIRSTC	17
+#define SECONDL_LASTC	32
 class displayHitachiHD44780 :
 	public basicLCD
 {
@@ -24,7 +28,12 @@ public:
 	
 
 private:
+	LCDConnect lcd;
 	FT_HANDLE * lcdPointer;
+	cursorPosition cursor;
+	int cadd;
+
+
 
 };
 

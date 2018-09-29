@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <windows.h>
 #include <chrono>
+#include "Error.h"
 
 //**************  FTD2XX  ***************
 #define FTD2XX_EXPORTS 
@@ -43,6 +44,7 @@
 #define LCD_SET_CGRAM_ADDRESS		0x07
 #define LCD_DDRAM_ADRESS			0x08
 #define LCD_READ_BUSY_FLAG_ADDRESS	0x09
+#define LCD_WRITE_AC				0X80
 //*************************************************
 
 //********************	 LCD  *********************
@@ -55,12 +57,18 @@
 
 //************* Funciones de bajo nivel **********
 
-void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble);
+class LCDConnect
+{
+	public: 
+		FT_HANDLE * init_ftdi_lcd(int iDevice);
+		void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor);
+		void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
+		string getErrorLcd(void);
 
-FT_HANDLE * init_ftdi_lcd(int iDevice);					//Funcion que inicializa el FTDI y el LCD
+	private:
+		void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble);
+		Error lcdError;
+		
+};
 
-//Escribe un byte al IR
-void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor);
 
-//Escribe un byte al DR 
-void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
