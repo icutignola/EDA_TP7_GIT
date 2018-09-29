@@ -99,7 +99,8 @@ public:
 	* Devuelve en su nombre “true” si fue satisfactoria “false”
 	* en caso contrario.
 	*=====================================================*/
-	virtual bool lcdMoveCursorDown() = 0;	/*=====================================================
+	virtual bool lcdMoveCursorDown() = 0;
+	/*=====================================================
 	* Name: lcdMoveCursorRight
 	*
 	* Entra: -
