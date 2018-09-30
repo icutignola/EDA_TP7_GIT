@@ -2,8 +2,8 @@
 #include "basicLCD.h"
 #include "LCDconnect.h"
 
-#define LCD_NUMBER	1
-#define FIRSTL_FIRSTC	1
+#define LCD_NUMBER	1	
+#define FIRSTL_FIRSTC	1	//Primera linea - Primera columna
 #define FIRSTL_LASTC	16
 #define SECONDL_FIRSTC	17
 #define SECONDL_LASTC	32
