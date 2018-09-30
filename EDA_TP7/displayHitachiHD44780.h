@@ -2,11 +2,17 @@
 #include "basicLCD.h"
 #include "LCDconnect.h"
 
-#define LCD_NUMBER	1	
+#define LCD_NUMBER		1	
+#define FIRST_LINE		0
+#define SECOND_LINE		1
+#define FIRST_COLUMN	0
+#define LAST_COLUMN		15
 #define FIRSTL_FIRSTC	1	//Primera linea - Primera columna
-#define FIRSTL_LASTC	16
-#define SECONDL_FIRSTC	17
-#define SECONDL_LASTC	32
+#define FIRSTL_LASTC	16	//Primera linea - Ultima columna
+#define SECONDL_FIRSTC	17	//Segunda linea - Primera columna
+#define SECONDL_LASTC	32	//Segundo linea - Ultima columna
+#define DISPLAY_OFFSET	16
+
 class displayHitachiHD44780 :
 	public basicLCD
 {
@@ -32,8 +38,6 @@ private:
 	FT_HANDLE * lcdPointer;
 	cursorPosition cursor;
 	int cadd;
-
-
 
 };
 

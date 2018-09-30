@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <windows.h>
 #include <chrono>
-#include "Error.h"
+
 
 //**************  FTD2XX  ***************
 #define FTD2XX_EXPORTS 
@@ -60,14 +60,15 @@
 class LCDConnect
 {
 	public: 
+		LCDConnect(void);
 		FT_HANDLE * init_ftdi_lcd(int iDevice);
 		void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor);
 		void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
-		string getErrorLcd(void);
+		FT_STATUS getStatus(void);
 
 	private:
 		void lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble);
-		Error lcdError;
+		FT_STATUS status;
 		
 };
 

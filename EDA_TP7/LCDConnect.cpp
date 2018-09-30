@@ -1,4 +1,5 @@
 #include "LCDConnect.h"
+
 using namespace std;
 
 void LCDConnect::lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
@@ -16,10 +17,13 @@ void LCDConnect::lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 	Sleep(1);
 }
 
+LCDConnect::LCDConnect(void)
+{
+	status != FT_OK;
+}
+
 FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 {
-	FT_STATUS statusOpen = !FT_OK;
-	FT_STATUS statusSet = !FT_OK;
 	FT_HANDLE lcdHandle = NULL;
 	DWORD sizeSent = 0;
 	string lcdDescriptionS = MY_LCD_DESCRIPTION + to_string(iDevice) + PORT_B;
@@ -33,28 +37,28 @@ FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 
 	cout << "Conectando el LCD..." << endl;
 
-	while (statusOpen != FT_OK && ((current - start) < MaxTime))
+	while (status != FT_OK && ((current - start) < MaxTime))
 	{
-		statusOpen = FT_OpenEx((void *)lcdDescriptionC, FT_OPEN_BY_DESCRIPTION, &lcdHandle);
+		status = FT_OpenEx((void *)lcdDescriptionC, FT_OPEN_BY_DESCRIPTION, &lcdHandle);
 
-		if (statusOpen == FT_OK)
+		if (status == FT_OK)
 		{
 			cout << "Se ha podidio conectar el LCD" << endl;
 			UCHAR Mask = 0xFF;	//Selects all FTDI pins.
 			UCHAR Mode = 1; 	// Set asynchronous bit-bang mode
-			statusSet = FT_SetBitMode(lcdHandle, Mask, Mode);
-			if (statusSet == FT_OK)
+			status = FT_SetBitMode(lcdHandle, Mask, Mode);
+			if (status == FT_OK)
 			{
 				cout << "Se configuro el LCD de forma correcta" << endl;
 			}
 			else
 			{
-				lcdError.setError("Ocurrio un error a la hora de configurar el LCD");
+				cout << "Ocurrio un error a la hora de configurar el LCD" << endl;
 			}
 		}
 		else
 		{
-			lcdError.setError("Ocurrio un error a la hora de contar el LCD");
+			cout << "Ocurrio un error a la hora de contar el LCD" << endl;
 		}
 		current = std::chrono::system_clock::now();
 	}
@@ -82,8 +86,10 @@ void LCDConnect::lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
-string LCDConnect::getErrorLcd(void)
+FT_STATUS LCDConnect::getStatus(void)
 {
-	return lcdError;
+	return status;
 }
+
+
 
