@@ -70,8 +70,10 @@ void LCDConnect::lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
 {
 	//valor: XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
+	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)
+	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
@@ -79,10 +81,10 @@ void LCDConnect::lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
 {
 	//valor = XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
-	temp = temp | 0x02;						//b: XXXX0010 (RS = 1)	
+	temp = temp | LCD_RS_ON;				//b: XXXX0010 (RS = 1)	
 	lcdWriteNibble(deviceHandler, temp);
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)	
-	temp = temp | 0x02;						//b: YYYY0010 (RS = 1)
+	temp = temp | LCD_RS_ON;				//b: YYYY0010 (RS = 1)
 	lcdWriteNibble(deviceHandler, temp);
 }
 
