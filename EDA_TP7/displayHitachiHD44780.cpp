@@ -41,6 +41,7 @@ bool
 displayHitachiHD44780::lcdClear()
 {
 	lcd.lcdWriteIR(lcdPointer,LCD_CLEAR);
+	return true;
 }
 
 bool
@@ -50,49 +51,37 @@ displayHitachiHD44780::lcdClearToEOL()
 
 	if ((cadd >= FIRSTL_FIRSTC && cadd <= FIRSTL_LASTC) || (cadd >= SECONDL_FIRSTC && cadd <= SECONDL_LASTC))
 	{
-		//BasicLCD lcd_aux;
-
+		displayHitachiHD44780 lcd_aux;
+		
 		for(int i=1 ; i<=cadd ; i++)
 		{
 			lcd_aux << ' '; // voy completando con espacios vacios
 		}
 
 		answer = true;
+	
 	}
 
-	return answer;
-		
-	/*Esta funcion basicamente recorre desde donde esta el puntero(cadd-1) hasta el final del display
-	poniendo vacios en el data(lo ideal seria un clear de un solo bit, pero no encontre si existe).
-	Los limites de navegacion deberian ser defines de las posiciones del lcd.
-	El orden seria: 
-					En que linea estoy?
-					Limpio hasta el final de esa linea de a posicion por posicion
-					si era la primera, tambien limpio la segunda, sino ya esta
-					
-	El tipo pide algun tipo de codigo de error. Solo se me ocurre que podria fallar si cadd-1 no esta en ninguna de las dos lineas.*/
-					
+	return answer;	
 }
 
 basicLCD & displayHitachiHD44780::operator<<(const unsigned char c)
 {
-	// TODO: insertar una instrucción return aquí
-	lcd.lcdWriteDR(lcdPointer, c); // imprimo  el caracter que recibo 
-	cadd++; // actualizo el cursor a la nueva posicion	 
+	lcd.lcdWriteDR(lcdPointer, c);	// imprimo  el caracter que recibo 
+	lcdMoveCursorRight();			// actualizo el cursor a la nueva posicion	 
+	return *this;
 }
 
 basicLCD & displayHitachiHD44780::operator<<(const unsigned char * c)
 {
-	// TODO: insertar una instrucción return aquí
 	int i = 0;
 	while( c[i] != '\0') // mientras que no llego al final del string
 	{
 		lcd.lcdWriteDR(lcdPointer, c[i]); // voy imprimiendo letra por letra del string
 		i++; // paso a la letra siguiente
-		cadd++; // actualizo el adress
+		lcdMoveCursorRight();
 	}
-	
-	
+	return *this;
 }
 
 bool

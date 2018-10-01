@@ -1,5 +1,6 @@
 #include "LCDConnect.h"
 
+
 using namespace std;
 
 void LCDConnect::lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
@@ -19,7 +20,7 @@ void LCDConnect::lcdWriteNibble(FT_HANDLE * ft, unsigned char nibble)
 
 LCDConnect::LCDConnect(void)
 {
-	status != FT_OK;
+	status = !FT_OK;
 }
 
 FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
@@ -27,8 +28,7 @@ FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 	FT_HANDLE lcdHandle = NULL;
 	DWORD sizeSent = 0;
 	string lcdDescriptionS = MY_LCD_DESCRIPTION + to_string(iDevice) + PORT_B;
-	char *lcdDescriptionC;
-	strcpy(lcdDescriptionC, lcdDescriptionS.c_str());
+	const char *lcdDescriptionC = lcdDescriptionS.c_str();
 
 	chrono::seconds MaxTime(CONNECTING_TIME);	// Determino un tiempo maximo para intentar conectarse 
 
