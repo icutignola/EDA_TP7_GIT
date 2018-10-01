@@ -7,6 +7,7 @@ displayHitachiHD44780::displayHitachiHD44780() //Poner en modo 4 bits
 {
 	lcdPointer = lcd.init_ftdi_lcd(LCD_NUMBER);
 	cadd = 1;
+	FT_STATUS status = FT_OK;	
 }
 
 displayHitachiHD44780::~displayHitachiHD44780()
