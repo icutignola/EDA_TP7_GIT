@@ -72,14 +72,18 @@ class LCDConnect
 	public: 
 		LCDConnect(void);
 		FT_HANDLE * init_ftdi_lcd(int iDevice);
-		void lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor);
-		void lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor);
+		void lcdWriteIR(FT_HANDLE deviceHandler, BYTE valor);
+		void lcdWriteDR(FT_HANDLE deviceHandler, BYTE valor);
 		FT_STATUS getStatus(void);
+		FT_HANDLE lcdHandle;
+		FT_HANDLE *pointerLcd;
 
 	private:
 		void lcdWriteNibble(FT_HANDLE ft, unsigned char nibble);
 		FT_STATUS status;
 		FT_STATUS send(BYTE valor, FT_HANDLE lcdPointer);
+		
+
 };
 
 

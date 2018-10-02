@@ -9,23 +9,22 @@ LCDConnect::LCDConnect(void)
 	status = !FT_OK;
 }
 
-void LCDConnect::lcdWriteDR(FT_HANDLE * deviceHandler, BYTE valor)
+void LCDConnect::lcdWriteDR(FT_HANDLE deviceHandler, BYTE valor)
 {
 	//valor = XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
 	temp = temp | LCD_RS_ON;				//b: XXXX0010 (RS = 1)	
-	lcdWriteNibble(*deviceHandler, temp);
+	lcdWriteNibble(deviceHandler, temp);
 	Sleep(1);
 	temp = 0x00;
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)	
 	temp = temp | LCD_RS_ON;				//b: YYYY0010 (RS = 1)
-	lcdWriteNibble(*deviceHandler, temp);
+	lcdWriteNibble(deviceHandler, temp);
 	Sleep(1);
 }
 
 FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 {
-	FT_HANDLE lcdHandle = NULL;
 	DWORD sizeSent = 0;
 	string lcdDescriptionS = MY_LCD_DESCRIPTION + to_string(iDevice) + PORT_B;
 	const char *lcdDescriptionC = lcdDescriptionS.c_str();
@@ -110,15 +109,15 @@ FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 	return &lcdHandle;
 }
 
-void LCDConnect::lcdWriteIR(FT_HANDLE * deviceHandler, BYTE valor)
+void LCDConnect::lcdWriteIR(FT_HANDLE deviceHandler, BYTE valor)
 {
 	//valor: XXXXYYYY
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
 	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
-	lcdWriteNibble(*deviceHandler, temp);
+	lcdWriteNibble(deviceHandler, temp);
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)
 	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
-	lcdWriteNibble(*deviceHandler, temp);
+	lcdWriteNibble(deviceHandler, temp);
 }
 
 FT_STATUS LCDConnect::getStatus(void)
@@ -141,22 +140,22 @@ FT_STATUS LCDConnect::send(BYTE valor, FT_HANDLE lcdPointer)
 	return status;
 }
 
-void LCDConnect::lcdWriteNibble(FT_HANDLE ft, BYTE nibble)
+void LCDConnect::lcdWriteNibble(FT_HANDLE ft, unsigned char nibble)
 {
 	//nibble: XXXXYYYY
 	FT_STATUS statusa;
 	unsigned char temp = (nibble & 0xfe);		//b: XXXXYYY0 (E = 0)
 	DWORD byteSent;
-	statusa = FT_Write(ft,&temp, 1, &byteSent);
+	statusa = FT_Write(lcdHandle,&temp, 1, &byteSent);
 	if(statusa != FT_OK)
 	{
 		cout << "Error";
 	}
 	Sleep(1);
 	temp = nibble | 0x01;					//b: XXXXYYY1 (E = 1)			
-	FT_Write(ft, &temp, 1, &byteSent);
+	FT_Write(lcdHandle, &temp, 1, &byteSent);
 	Sleep(3);
 	temp = nibble & 0xfe;					//b: XXXXYYY0 (E = 0)
-	FT_Write(ft, &temp, 1, &byteSent);
+	FT_Write(lcdHandle, &temp, 1, &byteSent);
 	Sleep(1);
 }

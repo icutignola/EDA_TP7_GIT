@@ -68,7 +68,8 @@ displayHitachiHD44780::lcdClearToEOL()
 
 basicLCD & displayHitachiHD44780::operator<<(const unsigned char c)
 {
-	lcd.lcdWriteDR(lcdPointer, c);	// imprimo  el caracter que recibo 
+	FT_HANDLE lcd_aux = *lcdPointer;
+	lcd.lcdWriteDR(lcd_aux, c);	// imprimo  el caracter que recibo 
 	lcdMoveCursorRight();			// actualizo el cursor a la nueva posicion	 
 	return *this;
 }

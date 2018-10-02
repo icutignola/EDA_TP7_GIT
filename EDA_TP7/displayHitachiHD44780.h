@@ -38,7 +38,7 @@ private:
 	FT_HANDLE * lcdPointer;
 	cursorPosition cursor;
 	int cadd;
-	FT_STATUS send(BYTE valor);
+	
 
 };
 
