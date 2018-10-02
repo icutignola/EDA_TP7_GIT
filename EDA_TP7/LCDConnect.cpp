@@ -92,12 +92,11 @@ FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 			{
 				std::cout << "ERROR 7";
 			}
-			status = send((LCD_ENTRY_MODE_SET | 0x02 | 0x00), lcdHandle);
+			status = send((LCD_ENTRY_MODE_SET | 0x02 | 0x01), lcdHandle);
 			if (status != FT_OK)
 			{
 				std::cout << "ERROR 8";
-			}	
-
+			}
 		}
 		else
 		{
@@ -147,10 +146,6 @@ void LCDConnect::lcdWriteNibble(FT_HANDLE ft, unsigned char nibble)
 	unsigned char temp = (nibble & 0xfe);		//b: XXXXYYY0 (E = 0)
 	DWORD byteSent;
 	statusa = FT_Write(lcdHandle,&temp, 1, &byteSent);
-	if(statusa != FT_OK)
-	{
-		cout << "Error";
-	}
 	Sleep(1);
 	temp = nibble | 0x01;					//b: XXXXYYY1 (E = 1)			
 	FT_Write(lcdHandle, &temp, 1, &byteSent);
