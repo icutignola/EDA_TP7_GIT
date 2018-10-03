@@ -32,14 +32,14 @@
 
 
 //*************  Define E  **************
-#define LCD_E		(1<<PORT_P0)
+#define LCD_E		0x01
 #define LCD_E_ON	(LCD_E)
 #define LCD_E_OFF	(LCD_E ^ LCD_E)
 #define NOT_MASK_LCD_E ~(LCD_E)
 //***************************************
 
 //*************  Define RS  *************
-#define LCD_RS		(1<<PORT_P1)
+#define LCD_RS		0x02
 #define LCD_RS_ON	(LCD_RS)
 #define LCD_RS_OFF	(LCD_RS ^ LCD_RS)
 //***************************************
@@ -79,9 +79,10 @@ class LCDConnect
 		FT_HANDLE *pointerLcd;
 
 	private:
-		void lcdWriteNibble(FT_HANDLE ft, unsigned char nibble);
+		void lcdWriteNibble(FT_HANDLE ft, BYTE nibble);
 		FT_STATUS status;
 		FT_STATUS send(BYTE valor, FT_HANDLE lcdPointer);
+
 		
 
 };

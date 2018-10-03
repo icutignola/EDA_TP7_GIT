@@ -2,7 +2,7 @@
 #include "basicLCD.h"
 #include "LCDconnect.h"
 
-#define LCD_NUMBER		1	
+#define LCD_NUMBER		3	
 #define FIRST_LINE		0
 #define SECOND_LINE		1
 #define FIRST_COLUMN	0
@@ -38,6 +38,7 @@ private:
 	FT_HANDLE * lcdPointer;
 	cursorPosition cursor;
 	int cadd;
+	virtual void lcdUpdateCursor();
 	
 
 };

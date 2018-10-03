@@ -12,7 +12,8 @@ LCDConnect::LCDConnect(void)
 void LCDConnect::lcdWriteDR(FT_HANDLE deviceHandler, BYTE valor)
 {
 	//valor = XXXXYYYY
-	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
+	BYTE temp = 0x00;
+	temp = valor & 0xF0;					//b: XXXX0000 (RS = 0)
 	temp = temp | LCD_RS_ON;				//b: XXXX0010 (RS = 1)	
 	lcdWriteNibble(deviceHandler, temp);
 	Sleep(1);
@@ -49,54 +50,28 @@ FT_HANDLE * LCDConnect::init_ftdi_lcd(int iDevice)
 			if (status == FT_OK)
 			{
 				cout << "Se configuro el LCD de forma correcta" << endl;
+				status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
+				Sleep(5);
+				status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
+				Sleep(1);
+				status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
+				Sleep(1);
+				status = send((LCD_FUNCTION_SET | LCD_MODE_4), lcdHandle);
+				Sleep(1);
+				status = send((LCD_FUNCTION_SET | LCD_MODE_4 | LINE_2 | FONT_5X8), lcdHandle);
+				Sleep(1);
+				status = send((LCD_DISPLAY_ON_OF_CONTROL | 0x04 | 0X02 | 0x01), lcdHandle);
+				Sleep(1);
+				//status = FT_Write(lcdPointer, &set, 1, &byteSent);
+				status = send((LCD_CLEAR), lcdHandle);
+				Sleep(10);
+				status = send((LCD_ENTRY_MODE_SET), lcdHandle);
 			}
 			else
 			{
 				cout << "Ocurrio un error a la hora de configurar el LCD" << endl;
 			}
 
-			status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
-			Sleep(5);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 1";
-			}
-			status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
-			Sleep(1);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 2";
-			}
-			status = send((LCD_FUNCTION_SET | LCD_MODE_8), lcdHandle);
-			Sleep(1);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 3";
-			}
-			status = send((LCD_FUNCTION_SET | LCD_MODE_4 | LINE_2 | FONT_5X8), lcdHandle);
-			Sleep(1);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 4";
-			}
-			status = send((LCD_DISPLAY_ON_OF_CONTROL | 0x04 | 0X02 | 0x01), lcdHandle);
-			Sleep(1);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 6";
-			}
-			//status = FT_Write(lcdPointer, &set, 1, &byteSent);
-			status = send((LCD_CLEAR), lcdHandle);
-			Sleep(10);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 7";
-			}
-			status = send((LCD_ENTRY_MODE_SET | 0x02 | 0x01), lcdHandle);
-			if (status != FT_OK)
-			{
-				std::cout << "ERROR 8";
-			}
 		}
 		else
 		{
@@ -114,6 +89,7 @@ void LCDConnect::lcdWriteIR(FT_HANDLE deviceHandler, BYTE valor)
 	unsigned char temp = valor & 0xF0;		//b: XXXX0000 (RS = 0)
 	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
+	temp = 0x00;
 	temp = ((valor & 0x0F) << 4) & 0xF0;	//b: YYYY0000 (RS = 0)
 	temp = temp | LCD_RS_OFF;				//b: XXXX0000 (RS = 0)
 	lcdWriteNibble(deviceHandler, temp);
@@ -139,18 +115,19 @@ FT_STATUS LCDConnect::send(BYTE valor, FT_HANDLE lcdPointer)
 	return status;
 }
 
-void LCDConnect::lcdWriteNibble(FT_HANDLE ft, unsigned char nibble)
+void LCDConnect::lcdWriteNibble(FT_HANDLE ft, BYTE nibble)
 {
 	//nibble: XXXXYYYY
 	FT_STATUS statusa;
-	unsigned char temp = (nibble & 0xfe);		//b: XXXXYYY0 (E = 0)
+	BYTE valueToSend = (nibble);						//b: XXXXYYY0 (E = 0)
 	DWORD byteSent;
-	statusa = FT_Write(lcdHandle,&temp, 1, &byteSent);
+	statusa = FT_Write(ft,&valueToSend, 1, &byteSent);
 	Sleep(1);
-	temp = nibble | 0x01;					//b: XXXXYYY1 (E = 1)			
-	FT_Write(lcdHandle, &temp, 1, &byteSent);
+	valueToSend = nibble | LCD_E_ON;					//b: XXXXYYY1 (E = 1)			
+	FT_Write(ft, &valueToSend, 1, &byteSent);
 	Sleep(3);
-	temp = nibble & 0xfe;					//b: XXXXYYY0 (E = 0)
-	FT_Write(lcdHandle, &temp, 1, &byteSent);
+	valueToSend = 0x00;
+	valueToSend = nibble;								//b: XXXXYYY0 (E = 0)
+	FT_Write(ft, &valueToSend, 1, &byteSent);
 	Sleep(1);
 }
